@@ -1,16 +1,36 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [userId, setUserId] = useState('');  // useStateの使用
-  const [password, setPassword] = useState('');  // useStateの使用
+  const [user_id, setUserId] = useState(''); 
+  const [password, setPassword] = useState(''); 
+  const navigate = useNavigate();
 
+  // ログインボタンを押したときの処理
   const handleLogin = () => {
-    // ログイン処理をここに追加
-    console.log('Logging in with', userId, password);
+    fetch('http://localhost:5000/login',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+      },
+      body:JSON.stringify({user_id,password}),
+    })
+    .then(response => response.json())
+    .then(data =>{
+      if(data.message === 'Login successful'){
+        console.log('Login successful',data.user);
+        navigate('/home');
+      }else{
+        console.error('Login failed');
+      }
+    })
+    .catch(error => {
+      console.log('Error',error)
+    });
   };
-
+// 新規登録ボタンを押したときの処理
   const handleRegister = () => {
-    // 新規登録処理をここに追加
+    navigate('/register');
     console.log('Navigate to register page');
   };
 
@@ -21,7 +41,7 @@ const Login = () => {
         <label>User ID</label>
         <input
           type="text"
-          value={userId}
+          value={user_id}
           onChange={(e) => setUserId(e.target.value)}
           style={styles.input}
         />

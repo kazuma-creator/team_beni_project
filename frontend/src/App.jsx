@@ -1,15 +1,17 @@
 import React from 'react'
 import {BrowserRouter as Router,Route,Routes} from 'react-router-dom';
 import Login from './components/Login'
+import Register from './components/Register'
 import Home from './components/Home';
 
 const App = () =>{
   return(
     <Router>
       <Routes>
-        <Route path='/login' Component={Login}/>
-        <Route path='/home' Component={Home} />
-        <Route path='/' Component={Login} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Login />} />{/* デフォルトルートをログイン画面に設定 */}
       </Routes>
     </Router>
   );
