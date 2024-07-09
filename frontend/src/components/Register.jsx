@@ -15,9 +15,9 @@ const Register = () => {
       method: 'POST',
       // リクエストヘッダーの設定
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json',//body形式指定
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data),//body jsonに変換
     })
       .then(response => response.json())
       .then(data => {
