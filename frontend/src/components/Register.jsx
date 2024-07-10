@@ -13,7 +13,7 @@ const Register = () => {
     const data = {username,user_id,password};
     fetch('http://localhost:5000/register', {
       method: 'POST',
-      // リクエストヘッダーの設定
+      // リクエストヘッダー の設定
       headers: {
         'Content-Type': 'application/json',//body形式指定
       },

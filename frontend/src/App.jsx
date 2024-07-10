@@ -11,7 +11,7 @@ const App = () =>{
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/" element={<Login />} />{/* デフォルトルートをログイン画面に設定 */}
+        <Route path="/" element={<Home />} />{/* デフォルトルートをログイン画面に設定 */}
       </Routes>
     </Router>
   );

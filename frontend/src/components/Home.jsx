@@ -1,10 +1,24 @@
-// src/components/Home.jsx
-import React from 'react';
+import React, { useState } from 'react';
+import Header from './Header';
+import Sidebar from './Sidebar';
+import MainContent from './MainContent';
 
 const Home = () => {
+  const [username, setUsername] = useState('UserName');  // 実際のユーザー名を設定
+  const [communities, setCommunities] = useState([]);  // 所属コミュニティのリスト
+
+  const handleCreateCommunity = () => {
+    // コミュニティ作成処理をここに追加
+    console.log('Create Community button clicked');
+  };
+
   return (
     <div style={styles.container}>
-      <h1>Home Page</h1>
+      <Header username={username} onCreateCommunity={handleCreateCommunity} />
+      <div style={styles.content}>
+        <Sidebar />
+        <MainContent communities={communities} />
+      </div>
     </div>
   );
 };
@@ -13,12 +27,11 @@ const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
     height: '100vh',
-    backgroundColor: '#f0f0f0',
-    padding: '20px',
-    boxSizing: 'border-box',
+  },
+  content: {
+    display: 'flex',
+    flex: 1,
   },
 };
 
