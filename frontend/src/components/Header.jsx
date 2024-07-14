@@ -6,17 +6,16 @@ const Header= () => {
 
   return (
 	//ここにHTML的な感じで書く！
-    <div>
-        <img src=""></img>
-        <div>
-
-            <div>
-                
-            </div>
-
+    <div style={styles.homeclass}>
+        <div style={styles.icon}>
+          <img src="icon.png"></img>
         </div>
-
-        <bottun>コミュニティを追加</bottun>
+        <div style={styles.username}>
+          <span>user_name</span>
+        </div>
+        <div style={styles.button}>
+          <button>コミュニティを追加</button>
+        </div>
     </div>
 
      );
@@ -25,6 +24,35 @@ const Header= () => {
 
 const styles = {
 	//ここにCSSを書く！
+  homeclass:{
+    display: 'flex',
+    background: rgb(130, 124, 124),
+    alignItems: 'center',
+  },
+
+  icon:{
+    display: 'flex',
+    marginleft: '10px',
+    width: '40px',
+    height: '40px',
+  },
+
+
+  username:{
+    display: 'flex',
+    marginleft: '40px',
+    fontsize: '30px',
+  },
+
+  button:{
+    display: 'flex',
+    marginleft: '80px',
+    fontsize: '20px',
+    color:aliceblue,     /*ボタンの文字のカラー*/
+    backgroundcolor:coral, /*ボタンの背景のカラー*/
+    borderradius: '5px',       /*ボタンの角を丸くする*/
+
+  }
 };
 
 
