@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import MainContent from './MainContent';
@@ -6,18 +6,57 @@ import MainContent from './MainContent';
 const Home = () => {
   const [username, setUsername] = useState('UserName');  // 実際のユーザー名を設定
   const [communities, setCommunities] = useState([]);  // 所属コミュニティのリスト
+  const userId = 1; // ログインしたユーザーのIDを設定
 
-  const handleCreateCommunity = () => {
-    // コミュニティ作成処理をここに追加
-    console.log('Create Community button clicked');
+  useEffect(()=>{
+    // ユーザー情報を取得してusernameを設定する
+    fetch('http://localhost:5000/user_info')
+    .then(response => response.json())
+    .then(data =>{
+      if(data.username){
+        setUsername(data.username);// ユーザー名をstateに設定
+      }
+    })
+    .catch(error => console.error('Error fetching user info:',error));
+
+
+    //所属コミュニティを取得して、communitiesを設定
+    fetch(`http://localhost:5000/get_communities/${userId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.communities) {
+        setCommunities(data.communities);// コミュニティリストをstateに設定
+      }
+    })
+    .catch(error => console.error('Error fetching communities:', error));
+  },[userId]);// userIdが変わると再実行される
+
+  // コミュニティ作成処理
+  const handleCreateCommunity = (communityName,description) => {
+    fetch('http://localhost:5000/create_community',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+      },
+      body: JSON.stringify({ name: communityName, description, creator_id: userId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.message === 'Community created successfully'){
+        setCommunities([...communities,{name:communityName,description}]);// コミュニティリストを更新
+      }else{
+        console.error('Community creation failed:',data.message);
+      }
+    })
+    .catch(error => console.error('Error creating community:',error));
   };
 
   return (
     <div style={styles.container}>
-      <Header username={username} onCreateCommunity={handleCreateCommunity} />
+      <Header username={username} onCreateCommunity={handleCreateCommunity} />{/* Headerにusernameを渡す*/}
       <div style={styles.content}>
         <Sidebar />
-        <MainContent communities={communities} />
+        <MainContent communities={communities} />{/**MainContentにcommunitiesを渡す */}
       </div>
     </div>
   );
