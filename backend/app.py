@@ -122,6 +122,32 @@ def join_community():
   db.session.commit()
   return jsonify({'message':'Joined successfully'}),200
 
+# コミュニティメンバーの取得エンドポイント
+@app.route('/community/<int:community_id>/members', methods=['GET'])
+def get_community_members(community_id):
+    community = Community.query.get(community_id)
+    if not community:
+        return jsonify({'message': 'Community not found'}), 404
+
+    members = [{'id': member.id, 'username': member.username} for member in community.members]
+    return jsonify({'members': members}), 200
+
+# ユーザーがコミュニティに参加しているかどうかをチェックするエンドポイント
+@app.route('/is_member', methods=['POST'])
+def is_member():
+    data = request.get_json()
+    community_id = data.get('community_id')
+    user_id = data.get('user_id')
+
+    community = Community.query.get(community_id)
+    user = User.query.get(user_id)
+    if not community or not user:
+        return jsonify({'message': 'Invalid community or user'}), 400
+
+    # ユーザーがコミュニティのメンバーであるかを確認
+    is_member = user in community.members
+    return jsonify({'is_member': is_member}), 200
+
 # コミュニティのメッセージ取得エンドポイント
 @app.route('/community/<int:community_id>/messages', methods=['GET'])
 def get_messages(community_id):
