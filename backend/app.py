@@ -2,17 +2,20 @@ from flask import Flask, request, jsonify,send_from_directory
 from app.models import db, User,Community,Message
 from flask_cors import CORS
 import os
+from werkzeug.utils import secure_filename
 
 # インスタンスを作成
 app = Flask(__name__,static_folder='../frontend/build',static_url_path='/')
-CORS(app)
-
+CORS(app,resources={r"/*": {"origins": "*"}})
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 # SQLiteデータベースのURLを設定
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'instance', 'users.db')
 # SQLAlchemyの変更追跡機能を無効にする
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+app.config['UPLOAD_FOLDER'] = os.path.join(basedir,'uploads')
+
 # アプリケーションとデータベースの関連付け
 db.init_app(app)
 
@@ -59,28 +62,44 @@ def login():
     return jsonify({'message': 'Invalid credentials'}), 401
 
 # コミュニティ作成のエンドポイント
-@app.route('/create_community',methods=['POST'])
+@app.route('/create_community', methods=['POST'])
 def create_community():
-  data = request.get_json()
-  print("Community data received",data)# デバッグ用ログ
-  name = data.get('name')# コミュニティ名を取得
-  description = data.get('description')# 説明を取得
-  creator_id = data.get('creator_id')# 作成者IDを取得
+  # Header.jsxからFormDataを取得
+    name = request.form.get('name') # コミュニティ名
+    description = request.form.get('description') # 説明
+    creator_id = request.form.get('creator_id') # 作成者ID
+    icon = request.files.get('icon') # アイコンファイル
+    
+    print("Received data",name,description,creator_id,icon)
+    
+    # コミュニティ名が提供されていない場合の処理
+    if not name:
+        return jsonify({'message': 'Community name is required'}), 400
+    
+    # コミュニティ名が既に存在する場合の処理
+    if Community.query.filter_by(name=name).first():
+        return jsonify({'message': 'Community already exists'}), 409
+    
+    icon_url = None
+    
+    if icon:
+        filename = secure_filename(icon.filename)
+        icon.save(os.path.join(app.config['UPLOAD_FOLDER'], filename)) # アイコンファイルを保存
+        icon_url = f'/uploads/{filename}' # アイコンURLを設定
+    
+    # 新しいコミュニティオブジェクトを作成し、データベースに追加してコミット
+    new_community = Community(name=name, description=description, creator_id=creator_id, icon_url=icon_url)
+    db.session.add(new_community)
+    db.session.commit()
+
+    # コミュニティ作成が成功した場合の処理
+    return jsonify({'message': 'Community created successfully'}), 201
   
-  # コミュニティ名が提供されていない場合の処理
-  if not name:
-    return jsonify({'message':'Community name is required'}),400
   
-  # コミュニティ名が既に存在する場合の処理
-  if Community.query.filter_by(name=name).first():
-    return jsonify({'message':'Community already exists'}),409
-  
-  # 新しいコミュニティオブジェクトを作成し、データベースに追加してコミット
-  new_community = Community(name=name,description=description,creator_id=creator_id)
-  db.session.add(new_community)
-  db.session.commit()
-  
-  return jsonify({'message':'Community created successfully'}), 201
+# アップロードファイルの提供
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+  return send_from_directory(app.config['UPLOAD_FOLDER'],filename) # アップロードファイルを提供
 
 # 所属コミュニティの取得エンドポイント
 @app.route('/get_communities/<int:user_id>', methods=['GET'])
@@ -100,7 +119,7 @@ def get_community(community_id):
   community = Community.query.get(community_id)
   if not community:
     return jsonify({'message':'Community not found'}), 404
-  return jsonify({'id':community.id,'name':community.name,'description':community.description}),200
+  return jsonify({'id':community.id,'name':community.name,'description':community.description,'icon_url': community.icon_url}),200
 
 # コミュニティに参加するエンドポイント
 @app.route('/join_community',methods=['POST'])

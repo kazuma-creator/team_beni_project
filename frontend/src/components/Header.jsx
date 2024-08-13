@@ -1,15 +1,35 @@
 import React,{useState} from 'react';
 
 const Header = ({ username, onCreateCommunity }) => {
-const [isModalOpen,setIsModalOpen] = useState(false);
+const [isModalOpen,setIsModalOpen] = useState(false);//モーダルの表示状態
 const [communityName,setCommunityName] = useState('');
 const [description,setDescription] = useState('');
+const [icon,setIcon] = useState(null); //アイコン用のstate
 
 // コミュニティ作成ボタンをクリックしたときの処理
 const handleCreateCommunity = () =>{
-  onCreateCommunity(communityName,description);
+  const formData = new FormData();
+  formData.append('name',communityName);
+  formData.append('description',description);
+  formData.append('creator_id',1);// creator_idを手動で設定
+  formData.append('icon',icon);//アイコンファイル
+
+  // ForDataｎ内容をログ出力
+  for(let pair of formData.entries()){
+    console.log(pair[0] + ': '+ pair[1]);
+  }
+  if(icon){
+    console.log('アイコンファイル:',icon);
+    console.log('Object URL:',URL.createObjectURL(icon));
+  }else{
+    console.error('No icon file provided');
+  }
+
+// モーダル
+  onCreateCommunity(formData);
   setCommunityName(''); // 入力フィールドをクリア
   setDescription(''); // 入力フィールドをクリア
+  setIcon(null);
   setIsModalOpen(false);// モーダルを閉じる
 };
 
@@ -39,10 +59,16 @@ const handleCreateCommunity = () =>{
             onChange={(e) => setDescription(e.target.value)}
             style={styles.textarea}
           ></textarea>
+          <input 
+            type='file'
+            onChange={(e) => setIcon(e.target.files[0])}//アイコンファイルを設定
+            style={styles.input}
+          />
+
           <button onClick={handleCreateCommunity} style={styles.button}>
             作成
           </button>
-          <button onClick={() => setIsModalOpen(false)} style={styles.button}>
+          <button onClick={() => setIsModalOpen(false)} style={styles.button}>  //モーダルを閉じる
             キャンセル
           </button>
         </div>

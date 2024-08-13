@@ -72,7 +72,8 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     height: '100vh',
-    backgroundColor: '#F2A7B7',
+    backgroundImage: 'url("/images/タイトル背景.png")',
+    backgroundSize: 'cover',
     padding: '20px',
     boxSizing: 'border-box',
     

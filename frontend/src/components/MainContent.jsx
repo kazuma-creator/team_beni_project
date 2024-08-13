@@ -10,6 +10,8 @@ const MainContent = ({ communities }) => {
           {communities.map((community, index) => (
             <li key={index} style={styles.communityItem}>
               <Link to={`/community/${community.id}`} style={styles.link}>
+              
+                <img src={community.icon_url} alt={community.name} style={styles.icon} />
                 <h3>{community.name}</h3>
                 <p>{community.description}</p>
               </Link>
@@ -36,6 +38,11 @@ const styles = {
   link:{
     textDecoration:'none',
     color:'inherit',
+  },
+  icon:{
+    width:'50px',
+    height:'50px',
+    marginRight:'10px',
   },
 };
 
