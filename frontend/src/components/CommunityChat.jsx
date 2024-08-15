@@ -18,19 +18,19 @@ const CommunityChat = () => {
   }, [id]);
 
   const handleSendMessage = () => {
-    if (!newMessage) return;
+    const userId = 1;
 
     fetch(`http://localhost:5000/community/${id}/messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ content: newMessage, user_id: 1 }),
+      body: JSON.stringify({ content: newMessage, user_id: userId }),
     })
       .then(response => response.json())
       .then(data => {
         if (data.message === 'Message sent successfully') {
-          setMessages([...messages, { content: newMessage, user_id: 1 }]);
+          setMessages([...messages, { content: newMessage, user_id: userId,username:data.username }]);
           setNewMessage('');
         } else {
           console.error('Failed to send message:', data.message);
@@ -48,7 +48,9 @@ const CommunityChat = () => {
       <h2 style={styles.title}>チャット</h2>
       <div style={styles.chatBox}>
         {messages.map((message, index) => (
-          <p key={index} style={styles.message}>{message.content}</p>
+          <div key={index} style={styles.message}>
+            <strong>{message.username}:</strong> {message.content}
+          </div>
         ))}
       </div>
       <div style={styles.inputContainer}>
@@ -104,7 +106,8 @@ const styles = {
     backgroundColor: '#fff',
   },
   message: {
-    margin: '5px 0',
+    padding: '10px',
+    borderBottom: '1px solid #ccc',
   },
   inputContainer: {
     display: 'flex',
