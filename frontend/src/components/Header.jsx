@@ -42,6 +42,7 @@ const handleCreateCommunity = () =>{
       <button onClick={() => setIsModalOpen(true)} style={styles.createButton}>
         コミュニティを作成
       </button>
+      {/* モーダルを開く */}
       {isModalOpen &&(
         <div style={styles.modal}>
         <div style={styles.modalContent}>
@@ -68,7 +69,7 @@ const handleCreateCommunity = () =>{
           <button onClick={handleCreateCommunity} style={styles.button}>
             作成
           </button>
-          <button onClick={() => setIsModalOpen(false)} style={styles.button}>  //モーダルを閉じる
+          <button onClick={() => setIsModalOpen(false)} style={styles.button}>  {/*モーダルを閉じる*/}
             キャンセル
           </button>
         </div>

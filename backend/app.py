@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__,static_folder='../frontend/build',static_url_path='/')
 CORS(app,resources={r"/*": {"origins": "*"}})
 
+# データベースの設定
 basedir = os.path.abspath(os.path.dirname(__file__))
 # SQLiteデータベースのURLを設定
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'instance', 'users.db')
@@ -24,8 +25,9 @@ def serve():
   return send_from_directory(app.static_folder,'index.html')
 
 
-# ユーザー登録のエンドポイント
+# ユーザー登録とログインの処理
 @app.route('/register', methods=['POST'])
+# ユーザー登録の処理
 def register():
     data = request.get_json()
     # リクエストデータからユーザー名とパスワードを取得
@@ -47,7 +49,7 @@ def register():
     db.session.commit()
 
     return jsonify({'message': 'User registered successfully'}), 201
-# ユーザーログインのエンドポイント
+# ユーザーログインの処理
 @app.route('/login',methods=['POST'])
 def login():
   data=request.get_json()# リクエストデータを取得
@@ -119,7 +121,11 @@ def get_community(community_id):
   community = Community.query.get(community_id)
   if not community:
     return jsonify({'message':'Community not found'}), 404
-  return jsonify({'id':community.id,'name':community.name,'description':community.description,'icon_url': community.icon_url}),200
+  return jsonify({'id':community.id,
+                  'name':community.name,
+                  'description':community.description,
+                  'icon_url': community.icon_url
+                  }),200
 
 # コミュニティに参加するエンドポイント
 @app.route('/join_community',methods=['POST'])

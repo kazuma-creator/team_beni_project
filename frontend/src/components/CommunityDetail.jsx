@@ -1,12 +1,23 @@
+//CommunityDetailの役割
+//①コミュニティの詳細情報の取得と表示
+//②コミュニティへの参加
+//③参加済みチェック
+
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const CommunityDetail = () => {
+  // URLからコミュニティのIDを取得
   const { id } = useParams();
+  // コミュニティ情報を格納するstate
   const [community, setCommunity] = useState(null);
-  const [isMember, setIsMember] = useState(false); // 追加
+  // ユーザーがコミュニティに参加しているかを確認するstate
+  const [isMember, setIsMember] = useState(false);
+  // ページ遷移を行うためのhook
   const navigate = useNavigate();
 
+  // コンポーネントがマウントされたときに実行される処理
   useEffect(() => {
     // コミュニティ情報の取得
     fetch(`http://localhost:5000/community/${id}`)
@@ -56,26 +67,30 @@ const CommunityDetail = () => {
       })
       .catch(error => console.error('Error joining community:', error));
   };
-
+// コミュニティ情報がまだ取得されていない場合は「Loading...」を表示
   if (!community) return <p>Loading...</p>;
 
   return (
     <div style={styles.container}>
       <div style={styles.header}>
         <div style={styles.avatar}></div>
-        <span>usernameさん</span>
+        <span>miyoshi</span>
       </div>
       <div style={styles.iconContainer}>
         <div style={styles.communityIcon}>コミュニティアイコン</div>
       </div>
       <h2 style={styles.title}>{community.name}</h2>
-      {isMember ? ( // 追加: メンバーかどうかを確認
+      {isMember ? ( // もしユーザーがメンバーであれば以下を表示
         <div style={styles.buttonContainer}>
+          {/* 戻るボタン */}
           <button onClick={() => navigate(-1)} style={styles.button}>戻る</button>
+          {/* メンバーリストへ移動するボタン */}
           <button onClick={() => navigate(`/community/${id}/members`)} style={styles.button}>メンバー</button>
+          {/* チャット画面へ移動するボタン */}
           <button onClick={() => navigate(`/community/${id}/chat`)} style={styles.button}>チャット</button>
         </div>
       ) : (
+        // もしユーザーがメンバーでなければ参加ボタンを表示
         <button onClick={handleJoinCommunity} style={styles.joinButton}>参加</button>
       )}
     </div>
